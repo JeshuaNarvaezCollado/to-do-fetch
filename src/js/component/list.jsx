@@ -15,9 +15,8 @@ const List = () => {
     })
     .then(resp => {
         console.log(resp.ok); 
-        console.log(resp.status);
-        console.log(resp.text()); 
-        return resp.json; 
+        console.log(resp.status); 
+        console.log(resp.text());
     })
     .then(data => {
         console.log(data); 
@@ -31,7 +30,7 @@ const List = () => {
   
   function addItem() {
     if (!inputValue) {
-      alert("Can't be empty");
+      alert("Item can't be empty");
       return;
     }
     let aux = {label : inputValue, done : false }
@@ -47,7 +46,7 @@ const List = () => {
 
   
   return (
-    <div className="d-inline-flex flex-column w-75 container justify-content-center align-items-center shadows">
+    <div className="d-inline-flex flex-column w-100 container justify-content-center align-items-center shadows">
       <div className="row">
         <h1 className="col-12">To-Do List with Fetch!</h1>
       </div>
@@ -66,7 +65,7 @@ const List = () => {
         </button>
       </div>
 
-      <ul id="list" className="list-group col-4 mt-5">
+      <ul id="list" className="list-group col-6 mt-3">
         {items.length == 0 ? 
           (<li className="list-group-item text-center"> Add a task!
           </li>)
