@@ -1,97 +1,73 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-const List = () => {
-  const [inputValue, setInputValue] = useState("");
-  const [items, setItems] = useState([]);
-  
-  useEffect(()=>{
-    if(items.length > 0){
-      fetch('https://assets.breatheco.de/apis/fake/todos/user/jeshuanarvaezcollado', {
-      method: "PUT",
-      body: JSON.stringify(items),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(resp => {
-        console.log(resp.ok); 
-        console.log(resp.status); 
-        console.log(resp.text());
-    })
-    .then(data => {
-        console.log(data); 
-    })
-    .catch(error => {
-        console.log(error);
-    });}
-    
+const ToDo = () => {
+    const [inputText, setInputText] = useState("");
+    const [task, setTask] = useState(["Test"]);
 
-  },[items])
-  
-  function addItem() {
-    if (!inputValue) {
-      alert("Item can't be empty");
-      return;
-    }
-    let aux = {label : inputValue, done : false }
-    setItems((prevList) => [...prevList, aux]);
-    setInputValue("");
-  }
-  function handleRemove(i) {      
-    let temp = [...items]
-    temp[i].done = !temp[i].done
-    setItems(temp)
-    
-  }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (inputText !== "") {
+            setTask([...task, inputText])
+            setInputText("");
+            console.log(task);
+        }
+        const toDoList = task.map((item)=>{
+             return {
+                "label": item,
+                "done": false
+            }
+           
+          })
+          console.log(toDoList);
+        fetch('https://assets.breatheco.de/apis/fake/todos/user/jeshuanarvaezcollado', {
+            method: "PUT",
+            body: JSON.stringify(toDoList),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
 
-  
-  return (
-    <div className="d-inline-flex flex-column w-100 container justify-content-center align-items-center shadows">
-      <div className="row">
-        <h1 className="col-12">To-Do List with Fetch!</h1>
-      </div>
-
-      <div className="row mt-7">
-        <input
-          className="col-8"
-          size="40"
-          type="text"
-          placeholder="Add an item here!"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <button className="col-4" onClick={() => addItem()}>
-          Add
-        </button>
-      </div>
-
-      <ul id="list" className="list-group col-6 mt-3">
-        {items.length == 0 ? 
-          (<li className="list-group-item text-center"> Add a task!
-          </li>)
-         : 
-          items.map((item, i) => (
-            
-              <li
-                className="list-group-item text-center"
-                id={i}
-                key={i}
-                onClick={(e)=>{
-                  handleRemove(i)
-                }}
-              >
-                {console.log(item.done)}
-               <span className={item.done ?"text-decoration-line-through" : null}>{item.label}</span>
-              </li>
-            
+    };
+    const handleDelete = (i) => {
+        setTask(task.filter((_, index)=>{
+            return index != i
+          })
           )
-        )}
-        <li className="list-group-item text-center text-black-50">{`${items.length} item left`}</li>
-        <div className="fondo1"></div>
-        <div className="fondo2"></div>
-      </ul>
-    </div>
-  );
+    }
+  
+    return (
+        <div className="container d-flex flex-column">
+            <div className="text-center">
+                <h1>To do list with fetch!</h1>
+            </div>
+            <form onSubmit={handleSubmit}>
+                <input
+                    onChange={(e) => { setInputText(e.target.value) }}
+                    value={inputText}
+                    type="text"
+                    placeholder="Add a task here!"
+                />
+                <ul className="list-group">
+                    {task.map((item, index) => (
+                        <li key={index} className="list-group-item d-flex justify-content-between">
+                            <span>
+                                {item}
+                            </span>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                onClick={()=>{handleDelete(index)}}
+                            >
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </form>
+        </div>
+    );
 };
 
-export default List;
+export default ToDo;
